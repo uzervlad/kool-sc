@@ -109,7 +109,7 @@ const els = {
     fc: createCountUp(document.querySelector(".pp>.fc"), { prefix: 'if fc: ', suffix: 'pp', duration: 0.15 }),
   },
   stats: {
-    bpm: document.querySelector(".bpm>.value"),
+    bpm: createCountUp(document.querySelector(".bpm>.value")),
     stars: document.querySelector(".stars>.value"),
     ar: document.querySelector(".ar>.value"),
     od: document.querySelector(".od>.value"),
@@ -163,7 +163,7 @@ socket.addEventListener("message", ev => {
   els.title.innerText = data.titleRoman;
   els.version.innerText = '[' + data.diffName + ']';
 
-  els.stats.bpm.innerText = Math.round(data.currentBpm);
+  updateCountUp(els.stats.bpm, Math.round(data.currentBpm));
   els.stats.stars.innerText = Math.round(data.mStars * 100) / 100;
   els.stats.ar.innerText = data.ar;
   els.stats.od.innerText = data.od;
