@@ -132,7 +132,6 @@ let currentBgImage = "";
 socket.addEventListener("message", ev => {
   let newData = JSON.parse(ev.data);
   data = { ...data, ...newData };
-  console.log(data);
 
   if(currentBgImage != data.backgroundImageLocation) {
     console.log("updating image");
