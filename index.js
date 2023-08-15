@@ -40,10 +40,15 @@ class BackgroundBuffer {
 const props = location.hash.slice(1).split("+");
 
 const createCountUp = (el, opts = {}) => new countUp.CountUp(el, 0, {
-  duration: 0.5,
+  duration: 0.3,
   useGrouping: false,
   ...opts,
-})
+});
+
+const updateCountUp = (cu, value) => {
+  if(cu.endVal != value)
+    cu.update(value);
+};
 
 const socket = new ReconnectingWebSocket(window.overlay.config.getWs() + "/tokens");
 
@@ -100,8 +105,8 @@ const els = {
   },
   pp: {
     container: document.querySelector("div.pp"),
-    now: createCountUp(document.querySelector(".pp>.now"), { suffix: 'pp' }),
-    fc: createCountUp(document.querySelector(".pp>.fc"), { prefix: 'if fc: ', suffix: 'pp' }),
+    now: createCountUp(document.querySelector(".pp>.now"), { suffix: 'pp', duration: 0.15 }),
+    fc: createCountUp(document.querySelector(".pp>.fc"), { prefix: 'if fc: ', suffix: 'pp', duration: 0.15 }),
   },
   stats: {
     bpm: document.querySelector(".bpm>.value"),
@@ -165,14 +170,14 @@ socket.addEventListener("message", ev => {
   els.stats.cs.innerText = data.cs;
   els.stats.hp.innerText = data.hp;
 
-  els.previews[98].update(data.osu_m98PP);
-  els.previews[99].update(data.osu_m99PP);
-  els.previews[100].update(data.osu_mSSPP);
+  updateCountUp(els.previews[98], data.osu_m98PP);
+  updateCountUp(els.previews[99], data.osu_m99PP);
+  updateCountUp(els.previews[100], data.osu_mSSPP);
 
-  els.hits[100].update(data.c100);
-  els.hits[50].update(data.c50);
-  els.hits[0].update(data.miss);
-  els.hits.sb.update(data.sliderBreaks);
+  updateCountUp(els.hits[100], data.c100);
+  updateCountUp(els.hits[50], data.c50);
+  updateCountUp(els.hits[0], data.miss);
+  updateCountUp(els.hits.sb, data.sliderBreaks);
 
   let showFcPp = data.miss + data.sliderBreaks > 0;
 
@@ -182,8 +187,8 @@ socket.addEventListener("message", ev => {
     els.pp.container.classList.remove("rip");
   }
 
-  els.pp.now.update(data.ppIfMapEndsNow);
-  els.pp.fc.update(data.noChokePp);
+  updateCountUp(els.pp.now, data.ppIfMapEndsNow);
+  updateCountUp(els.pp.fc, data.noChokePp);
 
   let mods = data.mods;
   if(oldMods != mods) {
